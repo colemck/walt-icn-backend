@@ -249,7 +249,8 @@ object VerifierController {
             ctx.status(HttpCode.FORBIDDEN)
             return
         }
-        ctx.contentType(ContentType.JSON).result(klaxonWithConverters.toJsonString(result))
+        //ctx.contentType(ContentType.JSON).result(klaxonWithConverters.toJsonString(result))
+        ctx.json(result)
     }
 
     fun getProtectedData(ctx: Context) {

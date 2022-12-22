@@ -1,5 +1,5 @@
 {
-  "verifierUiUrl": "http://$EXTERNAL_HOSTNAME:8081",
+  "verifierUiUrl": "http://localhost:3000",
   "verifierApiUrl": "http://$EXTERNAL_HOSTNAME:8081/verifier-api",
   "wallets": {
     "walt.id": {

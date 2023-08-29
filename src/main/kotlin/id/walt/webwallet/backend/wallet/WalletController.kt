@@ -41,6 +41,7 @@ import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
+import id.walt.signatory.RevocationService
 
 object WalletController {
     val routes
@@ -213,7 +214,28 @@ object WalletController {
                             .result<String>("200"),
                         WalletController::continueIssuerInitiatedIssuance
                     ), UserRole.AUTHORIZED)
-                }
+                    get("checkRevoked", documented(
+                        document().operation {
+                            it.summary("Check if credential is revoked")
+                                .addTagsItem("Issuance")
+                                .operationId("checkRevoked")
+                        }
+                            .queryParam<String>("id")
+                            .result<String>("200"),
+                        WalletController::checkRevoked
+                    ), UserRole.AUTHORIZED)
+
+                    get("revokeCredential", documented(
+                        document().operation {
+                            it.summary("Revokes a credential")
+                                .addTagsItem("Issuance")
+                                .operationId("revokeCredential")
+                        }
+                            .queryParam<String>("id")
+                            .result<String>("200"),
+                        WalletController::revokeCredential
+                    ), UserRole.AUTHORIZED)
+		}
                 path("onboard") {
                     path("gaiax/{did}") {
                         post(
@@ -477,6 +499,28 @@ object WalletController {
                     }
                 }
             ctx.result(location)
+        } catch (exc: Exception) {
+            ctx.result("/IssuanceError/?reason=${URLEncoder.encode(exc.message, StandardCharsets.UTF_8)}")
+        }
+    }
+
+    fun checkRevoked(ctx: Context) {
+        val credentialId = ctx.queryParam("id") ?: throw BadRequestResponse("Missing id parameter")
+
+        try {
+            val revocationToken = RevocationService.getRevocationToken(credentialId)
+            ctx.json(RevocationService.checkRevoked(revocationToken))
+        } catch (exc: Exception) {
+            ctx.result("/IssuanceError/?reason=${URLEncoder.encode(exc.message, StandardCharsets.UTF_8)}")
+        }
+    }
+
+    fun revokeCredential(ctx: Context) {
+        val credentialId = ctx.queryParam("id") ?: throw BadRequestResponse("Missing id parameter")
+
+        try {
+            ctx.json(RevocationService.revokeToken(credentialId))
+
         } catch (exc: Exception) {
             ctx.result("/IssuanceError/?reason=${URLEncoder.encode(exc.message, StandardCharsets.UTF_8)}")
         }

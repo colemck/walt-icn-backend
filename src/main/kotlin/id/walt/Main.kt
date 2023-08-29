@@ -48,7 +48,6 @@ fun main(args: Array<String>): Unit = runBlocking {
     ServiceMatrix("service-matrix.properties")
     ServiceRegistry.registerService<ContextManager>(WalletContextManager)
 
-    //File("/etc/hostname"
     //val filePath = "./credentials/serialized/HomeOwnership.json"
     //val filePath = "/home/ubuntu/waltid-gh/1219_walletkit/waltid-walletkit/src/main/kotlin/id/walt/credentials/HomeOwnership.json"
     //val filePath = "/credentials/HomeOwnership.json"
@@ -61,13 +60,14 @@ fun main(args: Array<String>): Unit = runBlocking {
         try {
 	    print("File found: \n")
             println(homeOwnershipFile.readText())
-            val homeOwnershipTemplate = File(filePath).readText();
             
-	    //Signatory.getService().importTemplate("HomeOwnership", homeOwnershipTemplate)
-            //println("Template saved as HomeOwnership")
-	    
-	    val vc = VerifiableCredential.fromJson(homeOwnershipTemplate)
-   	    VcTemplateManager.register("HomeOwnership", vc)
+	    ContextManager.runWith(IssuerManager.issuerContext){
+	   
+	        val homeOwnershipTemplate = File(filePath).readText();
+            
+	        Signatory.getService().importTemplate("HomeOwnership", homeOwnershipTemplate)
+                
+ 	    }
 	} catch (exc: Exception) {
 	    println("Error parsing credential template: ${exc.message}")
 	}

@@ -23,6 +23,9 @@ import io.javalin.plugin.openapi.dsl.document
 import io.javalin.plugin.openapi.dsl.documented
 import java.net.URI
 
+import id.walt.webwallet.backend.wallet.*
+
+
 object IssuerController {
     val routes
         get() =
@@ -63,7 +66,7 @@ object IssuerController {
                                 .queryParam<String>("userPin")
                                 .body<Issuables>()
                                 .result<String>("200"),
-                            IssuerController::requestIssuance
+                            IssuerController::requestIssuance,
                         ))
                     }
                 }
@@ -165,7 +168,49 @@ object IssuerController {
             ctx.result("${wallet.url}/${wallet.receivePath}?${initiationRequest.toQueryString()}")
         }
     }
+/*
+    fun requestIssuanceNewSession(ctx: Context) {
+        // create an issuance session
 
+        // call requestIssuance() the same way, but with the session
+
+        // LEARN TO MAKE THIS:
+
+    /* 
+    userInfo
+    selectedIssuabels
+    isPreAuthorized
+    userPin
+     */
+    
+        val wallet = ctx.queryParam("walletId")?.let { IssuerConfig.config.wallets.getOrDefault(it, null) }
+            ?: IssuerManager.getXDeviceWallet()
+
+        val userInfo = JWTService.getUserInfo(ctx)
+        if (userInfo == null) {
+          ctx.status(HttpCode.UNAUTHORIZED)
+          return
+        }
+
+        val selectedIssuables = ctx.bodyAsClass<Issuables>()
+        if (selectedIssuables.credentials.isEmpty()) {
+          ctx.status(HttpCode.BAD_REQUEST).result("No issuable credential selected")
+          return;
+        }
+
+        val isPreAuthorized = ctx.queryParam("isPreAuthorized")?.toBoolean() ?: false
+        val userPin = ctx.queryParam("userPin")?.ifBlank { null }
+
+        val initiationRequest = IssuerManager.newIssuanceInitiationRequest(selectedIssuables, isPreAuthorized, userPin)
+
+        val session = CredentialIssuanceManager.startIssuerInitiatedIssuance(initiationRequest)
+
+        val authRequest = session.authRequest ?: throw BadRequestResponse("No authorization request found for this session")
+        IssuerManager.updateIssuanceSession(session, selectedIssuables)
+        ctx.result("${authRequest.redirectionURI}?code=${IssuerManager.generateAuthorizationCodeFor(session)}&state=${authRequest.state.value}")
+  }
+
+*/
     fun oidcProviderMeta(ctx: Context) {
         ctx.json(IssuerManager.getOidcProviderMetadata().toJSONObject())
     }

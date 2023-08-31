@@ -14,13 +14,15 @@ services:
     extra_hosts:
       - "$HOSTNAME$COMPUTERNAME:host-gateway"
   wallet-ui:
-    image: waltid/ssikit-web-wallet:latest # wallet web ui docker image
+    #image: waltid/ssikit-web-wallet:latest # wallet web ui docker image
+    image: 361202841353.dkr.ecr.eu-central-1.amazonaws.com/ssi-ictu-walt/wallet-frontend:latest
   verifier-ui:
     image: waltid/ssikit-verifier-portal:latest # verifier web ui docker image
   issuer-ui:
-    image: waltid/ssikit-issuer-portal:latest # issuer web ui docker image
+    #image: waltid/ssikit-issuer-portal:latest # issuer web ui docker image
+    image: waltid/ssikit-issuer-portal-0130:latest
   ingress:
-    image: nginx:1.15.10-alpine
+    image: nginx:latest
     ports:
       - target: 80
         published: 8080 # wallet ui publish port

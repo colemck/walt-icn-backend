@@ -2,7 +2,7 @@ version: "3.3"
 services:
   walletkit:
     #image: waltid/walletkit:latest  # backend docker image
-    image: waltid/walletkit/1219:latest
+    image: waltid/walletkit/icn-changes:latest
     command:
       - run
     environment:
@@ -15,12 +15,12 @@ services:
       - "$HOSTNAME$COMPUTERNAME:host-gateway"
   wallet-ui:
     #image: waltid/ssikit-web-wallet:latest # wallet web ui docker image
-    image: 361202841353.dkr.ecr.eu-central-1.amazonaws.com/ssi-ictu-walt/wallet-frontend:latest
+    image: waltid/walletkit/wallet-ui/icn-changes:latest
   verifier-ui:
-    image: waltid/ssikit-verifier-portal:latest # verifier web ui docker image
+    image: waltid/ssikit-verifier-portal:latest # verifier web ui docker image (unchanged for ICN)
   issuer-ui:
     #image: waltid/ssikit-issuer-portal:latest # issuer web ui docker image
-    image: waltid/ssikit-issuer-portal-0130:latest
+    image: waltid/walletkit/issuer-ui/icn-changes:latest
   ingress:
     image: nginx:latest
     ports:

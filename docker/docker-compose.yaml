@@ -11,6 +11,7 @@ services:
       EXTERNAL_HOSTNAME: $HOSTNAME$COMPUTERNAME
     volumes:
       - .:/waltid-walletkit/data-root # data store volume incl. config files.
+      # - .:/walt-icn-backend/data-root # data store volume incl. config files.
     extra_hosts:
       - "$HOSTNAME$COMPUTERNAME:host-gateway"
   wallet-ui:
